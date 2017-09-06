@@ -1,5 +1,5 @@
 
-
+// ./node_modules/.bin/webpack -d 
 
 //react
 
@@ -115,10 +115,12 @@ const reducer = createReducer(
 
 
 //const store = createStore(reducer);
-const store = createStore(combineReducers({ ...rest.reducers, textFieldReducer: reducer  }), undefined, applyMiddleware(thunk));
+const redux_store = createStore(combineReducers({ ...rest.reducers, textFieldReducer: reducer }), undefined, applyMiddleware(thunk));
 
 const mapStateToProps = state => ({
-
+     server_answer1 : state.book.data,
+     server_answer2 : state.car.data,
+     server_answer3 : state.dvd.data
 
 });
 
@@ -160,7 +162,8 @@ class App extends React.Component {
 
 
     drawUIpage() {
-        return (<div>
+        return (
+        <div>
             <Table>
                 <TableBody>
                     <TableRow> <TableCell> Book </TableCell> <TableCell> <Button style={{ backgroundColor: '#FF9933' }} onClick={() => this.props.buttonListener1()}> Book -> price 10 € </Button> </TableCell> </TableRow>
@@ -171,6 +174,21 @@ class App extends React.Component {
         </div>);
     }
 
+
+    drawServerAnswer() {
+        return (
+            <div>
+                <br /><br />
+                <font color="orange"><h1> Server answers (each endpoint have their own field for http-resoponse -> many http-response) </h1></font>
+                <br /> <font color="red"> Server response 1 : {JSON.stringify(this.props.server_answer1)} </font>
+                <br /> <font color="green"> Server response 2 : {JSON.stringify(this.props.server_answer2)} </font>
+                <br /> <font color="blue"> Server response 3 : {JSON.stringify(this.props.server_answer3)} </font>
+            </div>
+        );
+
+    }
+
+
     render() {
         return <p> Hello React!
              <AppBar>
@@ -179,6 +197,7 @@ class App extends React.Component {
             </AppBar>
             <br />< br /><br />< br /><br />< br /><br />< br /><br />< br /><br />
             {this.drawUIpage()}
+             {this.drawServerAnswer()}
         </p>;
     }
 
@@ -187,7 +206,7 @@ class App extends React.Component {
 const ReduxApp = connect(mapStateToProps, mapDispatchToProps)(App)
 
 render(
-    <Provider store={store}>
+    <Provider store={redux_store}>
         <ReduxApp />
     </Provider>
     , document.getElementById('app'));
