@@ -114,8 +114,8 @@ const reducer = createReducer(
 );
 
 
-const store = createStore(reducer);
-
+//const store = createStore(reducer);
+const store = createStore(combineReducers({ ...rest.reducers, textFieldReducer: reducer  }), undefined, applyMiddleware(thunk));
 
 const mapStateToProps = state => ({
 
