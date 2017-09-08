@@ -5,6 +5,25 @@
 const Hapi = require('hapi');
 const Joi = require('joi');
 
+//const knex = require('knex');
+
+// --knex connection datastucture -- 
+
+const knex = require('knex')({
+    client: 'pg',
+    connection: {
+        //host : 'your_host', 
+        host: '127.0.0.1',
+        user: 'postgres',
+        password: '',
+        database: 'mydb1'
+    },
+    debug: true
+    //connection: process.env.PG_CONNECTION_STRING
+});
+
+//----------------------------------
+
 const server = new Hapi.Server();
 
 server.connection({
@@ -52,12 +71,12 @@ function timestamp_function() {
     timestamp_string.push(':');
     timestamp_string.push(timestamp_seconds);
 */
-   
+
     //return ' -> timestamp ' + timestamp_string;
 
     var server_date_and_time = new Date().toString();
 
-    return ' -> timestamp ' + server_date_and_time ;
+    return ' -> timestamp ' + server_date_and_time;
 }
 
 
@@ -76,7 +95,7 @@ server.route([
             console.log("Book handler, message -> " + x + timestamp_function());
 
             //return reply('hello world');
-            return reply(JSON.stringify({ body: 'buying book'  + timestamp_function() }));
+            return reply(JSON.stringify({ body: 'buying book' + timestamp_function() }));
         },
         //config : { valuez : Joi.string().min(5).max(20) } //validate string between 5 and 20 characters
 
@@ -105,16 +124,28 @@ server.route([
         path: '/dvd',
         handler: function (request, reply) {
             let x = request.payload.check;
-           // let timestamp = new Date().getTime();
+            // let timestamp = new Date().getTime();
             console.log("DVD handler, message -> " + x + timestamp_function());
             return reply(JSON.stringify({ body: 'trying to buy dvd' + timestamp_function() }));
         },
         // config: {}
     },
+    //----------------- route 4 -------------------------
+    {
+        method: 'POST',
+        path: '/save_to_database1',
+        handler: function (request, reply) {
 
+            //this endpoitn save values to postgresql - database using knex module
+            //getting values from frontend from request.payload
 
+            let input_a = request.payload.value_a;
+            let input_b = request.payload.value_b;
 
-
+            //knex-query for 'mytable1' table with fields 'a' and 'b'
+            knex('mytable1').insert({ table_a: input_a, table_b: input_b }).returning('*').then(results => results[0]);
+        },
+    }
 ]
 
 );

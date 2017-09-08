@@ -83,7 +83,24 @@ const rest = reduxApi({
         }
 
         //...
-    }
+    },
+    savedata1: {
+        url: `${page_url}/save_to_database1`,
+        options: {
+            method: 'post',
+            headers: {
+                "Accept": "application/json",
+                'Content-Type': 'application/json'
+            },
+        },
+        transformer(data, prevData) {
+            console.log("transformer called")
+            return { serverReply: data };
+        }
+
+        //...
+    },
+
 
 
 }).use('fetch', adapterFetch(fetch));
@@ -118,21 +135,18 @@ const reducer = createReducer(
 const redux_store = createStore(combineReducers({ ...rest.reducers, textFieldReducer: reducer }), undefined, applyMiddleware(thunk));
 
 const mapStateToProps = state => ({
-     server_answer1 : state.book.data,
-     server_answer2 : state.car.data,
-     server_answer3 : state.dvd.data
+    server_answer1: state.book.data,
+    server_answer2: state.car.data,
+    server_answer3: state.dvd.data
 
 });
 
 const mapDispatchToProps = (dispatch) => ({
 
-
-
     buttonListener1() {
         console.log("Buy book");
         let postBody = { check: 'book' }; //value from props, check mapStateToProps
         dispatch(rest.actions.book({}, { body: JSON.stringify(postBody) }));
-
     },
 
     buttonListener2() {
@@ -145,7 +159,13 @@ const mapDispatchToProps = (dispatch) => ({
         console.log("buy DVD-R");
         let postBody = { check: 'dvd' }; //value from props, check mapStateToProps
         dispatch(rest.actions.dvd({}, { body: JSON.stringify(postBody) }));
+    },
+
+    savedatatodb1() {
+        let postBody = { value_a: 'client_a', value_b: 'client_b' }; //value from props, check mapStateToProps
+        dispatch(rest.actions.savedata1({}, { body: JSON.stringify(postBody) }));
     }
+
 
 });
 
@@ -163,15 +183,15 @@ class App extends React.Component {
 
     drawUIpage() {
         return (
-        <div>
-            <Table>
-                <TableBody>
-                    <TableRow> <TableCell> Book </TableCell> <TableCell> <Button style={{ backgroundColor: '#FF9933' }} onClick={() => this.props.buttonListener1()}> Book -> price 10 € </Button> </TableCell> </TableRow>
-                    <TableRow> <TableCell> Car </TableCell> <TableCell> <Button style={{ backgroundColor: '#FF9933' }} onClick={() => this.props.buttonListener2()}> Car -> price 3000 € </Button> </TableCell> </TableRow>
-                    <TableRow> <TableCell> DVD-R </TableCell> <TableCell> <Button style={{ backgroundColor: '#FF9933' }} onClick={() => this.props.buttonListener3()} > DVD-R -> not available </Button> </TableCell> </TableRow>
-                </TableBody>
-            </Table>
-        </div>);
+            <div>
+                <Table>
+                    <TableBody>
+                        <TableRow> <TableCell> Book </TableCell> <TableCell> <Button style={{ backgroundColor: '#FF9933' }} onClick={() => this.props.buttonListener1()}> Book -> price 10 € </Button> </TableCell> </TableRow>
+                        <TableRow> <TableCell> Car </TableCell> <TableCell> <Button style={{ backgroundColor: '#FF9933' }} onClick={() => this.props.buttonListener2()}> Car -> price 3000 € </Button> </TableCell> </TableRow>
+                        <TableRow> <TableCell> DVD-R </TableCell> <TableCell> <Button style={{ backgroundColor: '#FF9933' }} onClick={() => this.props.buttonListener3()} > DVD-R -> not available </Button> </TableCell> </TableRow>
+                    </TableBody>
+                </Table>
+            </div>);
     }
 
 
@@ -197,7 +217,9 @@ class App extends React.Component {
             </AppBar>
             <br />< br /><br />< br /><br />< br /><br />< br /><br />< br /><br />
             {this.drawUIpage()}
-             {this.drawServerAnswer()}
+            {this.drawServerAnswer()}
+            <br /><br />
+            <Button style={{ backgroundColor: '#FF9933' }} onClick={() => this.props.savedatatodb1()}> Save to database 1 </Button>
         </p>;
     }
 
